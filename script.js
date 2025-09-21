@@ -22,6 +22,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// Inicializar EmailJS
+(function () {
+    emailjs.init('-6k34mdOcWSzYRYEq');
+})();
+
 // Contact form handling
 document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -29,12 +34,35 @@ document.getElementById('contactForm').addEventListener('submit', function (e) {
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const message = document.getElementById('message').value;
+    const submitButton = e.target.querySelector('button[type="submit"]');
 
-    // Aqui você pode adicionar a lógica para enviar o formulário
-    // Por exemplo, integração com EmailJS ou outro serviço
+    // Desabilitar o botão durante o envio
+    submitButton.disabled = true;
+    submitButton.textContent = 'Enviando...';
 
-    alert('Obrigado pela mensagem! Entrarei em contato em breve.');
-    this.reset();
+    // Parâmetros para o template do EmailJS
+    const templateParams = {
+        from_name: name,
+        from_email: email,
+        message: message,
+        to_email: 'joaofrazao054@gmail.com'
+    };
+
+    // Enviar email usando EmailJS
+    emailjs.send('service_q3tog74', 'template_p3dzdi5', templateParams)
+        .then(function (response) {
+            console.log('Email enviado com sucesso!', response.status, response.text);
+            alert('Mensagem enviada com sucesso! Obrigado pelo contato.');
+            document.getElementById('contactForm').reset();
+        }, function (error) {
+            console.error('Erro ao enviar email:', error);
+            alert('Erro ao enviar mensagem. Tente novamente ou entre em contato pelo WhatsApp.');
+        })
+        .finally(function () {
+            // Reabilitar o botão
+            submitButton.disabled = false;
+            submitButton.textContent = 'Enviar Mensagem';
+        });
 });
 
 // Animate elements on scroll
